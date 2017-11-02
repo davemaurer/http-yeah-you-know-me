@@ -3,13 +3,16 @@ require 'socket'
 class Server
   def initialize
     @server = TCPServer.new(9292)
+    @listening = true
+    @hello_counter = 0
+    @headers = {}
   end
 
   def start
-    counter = 0
-    loop do
+    while @listening do
       client = @server.accept
-      counter += 1
+      handle_request(client)
+
       body = "<html><head></head><body><h1>Hello World, Count: #{counter}</h1></body></html>"
       client.puts ["http/1.1 200 ok",
         "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
@@ -20,31 +23,42 @@ class Server
     end
   end
 
-  def read_request
-    client = @server.accept
+  def handle_request(client)
+    build_request_headers(client)
+    
+  end
+
+  def parse_request(client)
     request_lines = []
     line = client.gets
     until line.chomp.empty?
       request_lines << line
       line = client.gets
     end
-    build_response_headers(request_lines)
-    require 'pry' ; binding.pry
-    request_lines
+    request_lines.map { |line| line.chomp.split(" ") }
   end
 
-  def build_response_headers(request_lines)
-    lines = request_lines.map { |line| line.chomp.split(" ") }
-    headers = "<pre>
-                Verb: #{lines[0][0]}
-                Path: #{lines[0][1]}
-                Protocol: #{lines[0][2]}
-                Host: #{lines[1][1]}
-                Port: #{lines[1][1][-4..-1]}
-                Origin: #{lines[1][1]}
-                Accept: #{lines[6][1]}
-               </pre>\n"
-    p headers
+  def debugging_output
+    "<pre>
+      Verb: #{@headers[:verb]}
+      Path: #{@headers[:path]}
+      Protocol: #{@headers[:protocol]}
+      Host: #{@headers[:host]}
+      Port: #{@headers[:port]}
+      Origin: #{@headers[:origin]}
+      Accept: #{@headers[:accept]}
+     </pre>"
+  end
+
+  def build_request_headers(client)
+    lines = parse_request(client)
+    @headers[:verb]     = lines[0][0]
+    @headers[:path]     = lines[0][1]
+    @headers[:protocol] = lines[0][2]
+    @headers[:host]     = lines[1][1]
+    @headers[:port]     = lines[1][1][-4..-1]
+    @headers[:origin]   = lines[1][1]
+    @headers[:accept]   = lines[6][1]
   end
 
 end
