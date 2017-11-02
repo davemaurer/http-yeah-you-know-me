@@ -17,26 +17,37 @@ class Server
 
   def handle_request(client)
     build_request_headers(client)
-    client.puts response_headers
     respond_with_hello(client) if @headers[:verb] == "GET" && @headers[:path] == "/hello"
     respond_with_root_info(client) if @headers[:verb] == "GET" && @headers[:path] == "/"
+    respond_with_date(client) if @headers[:verb] == "GET" && @headers[:path] == "/datetime"
   end
 
-  def response_headers
+  def response_headers(body)
     ["http/1.1 200 ok",
      "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
      "server: ruby",
      "content-type: text/html; charset=iso-8859-1",
-     "content-length: 55\r\n\r\n"].join("\r\n")
+     "content-length: #{body.length}\r\n\r\n"].join("\r\n")
+  end
+
+  def respond_with_date(client)
+    body = "<html><head></head><body>#{Time.now.strftime('%H:%M%p on %A, %B %e, %Y')}</body></html>"
+    client.puts response_headers(body)
+    client.puts body
   end
 
   def respond_with_root_info(client)
-    client.puts debugging_output
+    body = "<html><head></head><body>#{debugging_output}</body></html>"
+    client.puts response_headers(body)
+    client.puts body
   end
 
   def respond_with_hello(client)
     @hello_counter += 1
-    client.puts "<html><head></head><body><h1>Hello World, Count: #{@hello_counter}</h1></body></html>"
+    body = "<html><head></head><body><h1>Hello World, " \
+           "Count: #{@hello_counter}</h1></body></html>"
+    client.puts response_headers(body)
+    client.puts body
   end
 
   def parse_request(client)
@@ -69,7 +80,7 @@ class Server
     @headers[:host]     = lines[1][1]
     @headers[:port]     = lines[1][1][-4..-1]
     @headers[:origin]   = lines[1][1]
-    @headers[:accept]   = lines[6][1]
+    @headers[:accept]   = lines.find { |line| line[0] == "Accept:" }[1]
   end
 
 end
