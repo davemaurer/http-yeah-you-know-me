@@ -1,27 +1,30 @@
 require 'socket'
+require '../lib/request'
 
 class Server
+  attr_accessor :headers
+
   def initialize
-    @server = TCPServer.new(9292)
+    @server = TCPServer.new(3000)
     @listening = true
     @hello_counter = 0
-    @headers = {}
+    @headers = nil
   end
 
   def start
-    while @listening do
+    while @listening
       client = @server.accept
-      headers = build_request_headers(client)
-      handle_request(client, headers)
+      request = Request.new(client)
+      handle_request(request, headers)
     end
   end
 
-  def handle_request(client, headers)
+  def handle_request(request, headers)
     verb = headers[:verb]
     path = headers[:path]
-    respond_with_hello(client) if @headers[:verb] == "GET" && @headers[:path] == "/hello"
-    respond_with_root_info(client) if @headers[:verb] == "GET" && @headers[:path] == "/"
-    respond_with_date(client) if @headers[:verb] == "GET" && @headers[:path] == "/datetime"
+    respond_with_hello(request) if @headers[:verb] == "GET" && @headers[:path] == "/hello"
+    respond_with_root_info(request) if @headers[:verb] == "GET" && @headers[:path] == "/"
+    respond_with_date(request) if @headers[:verb] == "GET" && @headers[:path] == "/datetime"
   end
 
   def response_headers(length)
@@ -39,7 +42,7 @@ class Server
   end
 
   def respond_with_root_info(client)
-    body = "<html><head></head><body>#{debugging_output}</body></html>"
+    body = "<html><head></head><body>#{debugging_output(header_values)}</body></html>"
     client.puts response_headers(body)
     client.puts body
   end
@@ -52,7 +55,7 @@ class Server
     client.puts body
   end
 
-  def parse_request(client)
+  def request_lines(client)
     request_lines = []
     line = client.gets
     until line.chomp.empty?
@@ -75,8 +78,12 @@ class Server
   end
 
   def build_request_headers(client)
-    lines = parse_request(client)
-    add_header_values(lines)
+    values = Request.request_lines(client)
+    add_header_values(values)
+  end
+
+  def request_header_values()
+
   end
 
   def add_header_values(lines)
