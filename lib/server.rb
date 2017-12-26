@@ -12,11 +12,11 @@ class Server
     while @listening do
       client = @server.accept
       handle_request(client)
+      build_request_headers(client)
     end
   end
 
   def handle_request(client)
-    build_request_headers(client)
     respond_with_hello(client) if @headers[:verb] == "GET" && @headers[:path] == "/hello"
     respond_with_root_info(client) if @headers[:verb] == "GET" && @headers[:path] == "/"
     respond_with_date(client) if @headers[:verb] == "GET" && @headers[:path] == "/datetime"
