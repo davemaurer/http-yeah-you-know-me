@@ -22,17 +22,17 @@ class Server
     respond_with_date(client) if @headers[:verb] == "GET" && @headers[:path] == "/datetime"
   end
 
-  def response_headers(body)
+  def response_headers(length)
     ["http/1.1 200 ok",
      "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
      "server: ruby",
      "content-type: text/html; charset=iso-8859-1",
-     "content-length: #{body.length}\r\n\r\n"].join("\r\n")
+     "content-length: #{length}\r\n\r\n"].join("\r\n")
   end
 
   def respond_with_date(client)
     body = "<html><head></head><body>#{Time.now.strftime('%H:%M%p on %A, %B %e, %Y')}</body></html>"
-    client.puts response_headers(body)
+    client.puts response_headers(body.length)
     client.puts body
   end
 
