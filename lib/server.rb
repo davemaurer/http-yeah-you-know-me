@@ -26,14 +26,14 @@ class Server
 
   def response_headers(length)
     ["http/1.1 200 ok",
-     "date: #{Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')}",
+     "date: #{current_date_for_headers}",
      "server: ruby",
      "content-type: text/html; charset=iso-8859-1",
      "content-length: #{length}\r\n\r\n"].join("\r\n")
   end
 
   def respond_with_date(client)
-    body = "<html><head></head><body>#{Time.now.strftime('%H:%M%p on %A, %B %e, %Y')}</body></html>"
+    body = "<html><head></head><body>#{current_time_for_view}</body></html>"
     client.puts response_headers(body.length)
     client.puts body
   end
@@ -50,5 +50,13 @@ class Server
            "Count: #{@hello_counter}</h1></body></html>"
     client.puts response_headers(body)
     client.puts body
+  end
+
+  def current_time_for_view
+    Time.now.strftime('%H:%M%p on %A, %B %e, %Y')
+  end
+
+  def current_date_for_headers
+    Time.now.strftime('%a, %e %b %Y %H:%M:%S %z')
   end
 end
