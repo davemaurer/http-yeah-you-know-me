@@ -1,5 +1,6 @@
 class Request
-  attr_reader :headers
+  attr_reader :verb, :path, :protocol, :host,
+              :port, :origin, :accept
 
   def initialize(client)
     @request_lines = request_lines(client)
@@ -53,5 +54,17 @@ class Request
 
   def accept
     @request_lines.find {|line| line[0] == "Accept:"}[1]
+  end
+
+  def hello_path
+    verb == "GET" && path == "/hello"
+  end
+
+  def root_path
+    verb == "GET" && path == "/"
+  end
+
+  def datetime_path
+    verb == "GET" && path == "/datetime"
   end
 end

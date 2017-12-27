@@ -1,5 +1,5 @@
 require 'socket'
-require '../lib/request'
+require_relative '../lib/request'
 
 class Server
   attr_accessor :headers
@@ -19,9 +19,9 @@ class Server
   end
 
   def handle_request(request)
-    respond_with_hello(request) if @headers[:verb] == "GET" && @headers[:path] == "/hello"
-    respond_with_root_info(request) if @headers[:verb] == "GET" && @headers[:path] == "/"
-    respond_with_date(request) if @headers[:verb] == "GET" && @headers[:path] == "/datetime"
+    respond_with_hello(request) if request.hello_path
+    respond_with_root_info(request) if request.root_path
+    respond_with_date(request) if request.datetime_path
   end
 
   def response_headers(length)
@@ -52,6 +52,3 @@ class Server
     client.puts body
   end
 end
-
-server = Server.new
-server.start
