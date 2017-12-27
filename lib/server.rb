@@ -37,9 +37,9 @@ class Server
   end
 
   def respond_with_root_info(client)
-    body = "<html><head></head><body>#{debugging_output(header_values)}</body></html>"
-    client.puts response_headers(body)
-    client.puts body
+    response = View.new(debugging_output(header_values))
+    client.puts response_headers(response.body_length)
+    client.puts response
   end
 
   def respond_with_hello(client)
