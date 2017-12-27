@@ -56,15 +56,15 @@ class Request
     @request_lines.find {|line| line[0] == "Accept:"}[1]
   end
 
-  def hello_path
+  def hello_path?
     verb == "GET" && path == "/hello"
   end
 
-  def root_path
+  def root_path?
     verb == "GET" && path == "/"
   end
 
-  def datetime_path
+  def datetime_path?
     verb == "GET" && path == "/datetime"
   end
 end

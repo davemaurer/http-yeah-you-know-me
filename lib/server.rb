@@ -19,9 +19,9 @@ class Server
   end
 
   def handle_request(request)
-    respond_with_hello(request) if request.hello_path
-    respond_with_root_info(request) if request.root_path
-    respond_with_date(request) if request.datetime_path
+    respond_with_hello(request) if request.hello_path?
+    respond_with_root_info(request) if request.root_path?
+    respond_with_date(request) if request.datetime_path?
   end
 
   def response_headers(length)
