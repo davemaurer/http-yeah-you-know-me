@@ -2,8 +2,6 @@ require 'socket'
 require_relative '../lib/request'
 
 class Server
-  attr_accessor :headers
-
   def initialize
     @server = TCPServer.new(3000)
     @listening = true
