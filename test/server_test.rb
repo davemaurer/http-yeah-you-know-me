@@ -1,6 +1,4 @@
-require 'minitest/autorun'
-require 'minitest/pride'
-require 'minitest/spec'
+require_relative 'test_helper'
 require './lib/server'
 
 describe Server do

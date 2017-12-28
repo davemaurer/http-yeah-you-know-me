@@ -1,6 +1,5 @@
 class Request
-  attr_reader :verb, :path, :protocol, :host,
-              :port, :origin, :accept, :debugging_info
+  attr_reader :debugging_info
 
   def initialize(client)
     @request_lines = request_lines(client)
@@ -16,41 +15,41 @@ class Request
 
   def debugging_info
     {
-      verb: verb,
-      path: path,
-      protocol: protocol,
-      host: host,
-      port: port,
-      origin: origin,
-      accept: accept
+      verb: request_verb,
+      path: request_path,
+      protocol: request_protocol,
+      host: request_host,
+      port: request_port,
+      origin: request_origin,
+      accept: request_accept
     }
   end
 
-  def verb
+  def request_verb
     @request_lines[0][0]
   end
 
-  def path
+  def request_path
     @request_lines[0][1]
   end
 
-  def protocol
+  def request_protocol
     @request_lines[0][2]
   end
 
-  def host
+  def request_host
     @request_lines[1][1]
   end
 
-  def port
+  def request_port
     @request_lines[1][1][-4..-1]
   end
 
-  def origin
+  def request_origin
     @request_lines[1][1]
   end
 
-  def accept
+  def request_accept
     @request_lines.find {|line| line[0] == "Accept:"}[1]
   end
 
