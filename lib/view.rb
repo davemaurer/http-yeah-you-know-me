@@ -5,24 +5,23 @@ class View
   end
 
   def response_html
-    @debugging_info
-    "<html><head></head><body>#{@view_body}</body></html>"
+    "<html><head></head><body>#{debugging_output + @view_body}</body></html>"
   end
 
   def body_length
-    @view_body.length
+    response_html.length
   end
 
   def debugging_output
     info = @debugging_info
-    "<pre>
-      Verb: #{info[:verb]}
-      Path: #{info[:path]}
-      Protocol: #{info[:protocol]}
-      Host: #{info[:host]}
-      Port: #{info[:port]}
-      Origin: #{info[:origin]}
-      Accept: #{info[:accept]}
-     </pre>"
+    "<pre>\n" +
+      "Verb: #{info[:verb]}\n" +
+      "Path: #{info[:path]}\n" +
+      "Protocol: #{info[:protocol]}\n" +
+      "Host: #{info[:host]}\n" +
+      "Port: #{info[:port]}\n" +
+      "Origin: #{info[:origin]}\n" +
+      "Accept: #{info[:accept]}\n" +
+    "</pre>\n"
   end
 end

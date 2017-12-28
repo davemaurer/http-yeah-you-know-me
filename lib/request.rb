@@ -1,20 +1,17 @@
 class Request
   attr_reader :verb, :path, :protocol, :host,
-              :port, :origin, :accept, :client
+              :port, :origin, :accept, :debugging_info
 
   def initialize(client)
-    @client = client
-    @request_lines = request_lines(@client)
+    @request_lines = request_lines(client)
   end
 
   def request_lines(client)
     request_lines = []
-    line = client.gets
-    until line.chomp.empty?
-      request_lines << line
-      line = client.gets
+    while line = client.gets and !line.chomp.empty?
+      request_lines << line.chomp
     end
-    request_lines.map { |l| l.chomp.split(" ") }
+    p request_lines.map { |l| l.split(" ") }
   end
 
   def debugging_info
