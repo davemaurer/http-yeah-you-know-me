@@ -1,14 +1,28 @@
 class View
-  attr_reader :body
-  def initialize(body)
-    @body = body
+  def initialize(view_body, debugging_info)
+    @view_body = view_body
+    @debugging_info = debugging_info
   end
 
-  def response
-    "<html><head></head><body>#{body}</body></html>"
+  def response_html
+    @debugging_info
+    "<html><head></head><body>#{@view_body}</body></html>"
   end
 
   def body_length
-    body.length
+    @view_body.length
+  end
+
+  def debugging_output
+    info = @debugging_info
+    "<pre>
+      Verb: #{info[:verb]}
+      Path: #{info[:path]}
+      Protocol: #{info[:protocol]}
+      Host: #{info[:host]}
+      Port: #{info[:port]}
+      Origin: #{info[:origin]}
+      Accept: #{info[:accept]}
+     </pre>"
   end
 end

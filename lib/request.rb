@@ -1,9 +1,10 @@
 class Request
   attr_reader :verb, :path, :protocol, :host,
-              :port, :origin, :accept
+              :port, :origin, :accept, :client
 
   def initialize(client)
-    @request_lines = request_lines(client)
+    @client = client
+    @request_lines = request_lines(@client)
   end
 
   def request_lines(client)
@@ -16,16 +17,16 @@ class Request
     request_lines.map { |l| l.chomp.split(" ") }
   end
 
-  def debugging_output
-    "<pre>
-      Verb: #{verb}
-      Path: #{path}
-      Protocol: #{protocol}
-      Host: #{host}
-      Port: #{port}
-      Origin: #{origin}
-      Accept: #{accept}
-     </pre>"
+  def debugging_info
+    {
+      verb: verb,
+      path: path,
+      protocol: protocol,
+      host: host,
+      port: port,
+      origin: origin,
+      accept: accept
+    }
   end
 
   def verb

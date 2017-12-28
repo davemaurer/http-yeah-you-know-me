@@ -12,14 +12,15 @@ class Server
     while @listening
       client = @server.accept
       request = Request.new(client)
-      handle_request(request)
+      handle_request(request.client)
     end
   end
 
   def handle_request(request)
-    respond_with_hello(request) if request.hello_path?
-    respond_with_root_info(request) if request.root_path?
-    respond_with_date(request) if request.datetime_path?
+    debugging_info = request.debugging_info
+    respond_with_hello(request.client, debugging_info) if request.hello_path?
+    respond_with_root_info(request.client, debugging_info) if request.root_path?
+    respond_with_date(request.client, debugging_info) if request.datetime_path?
   end
 
   def response_headers(length)
@@ -30,22 +31,22 @@ class Server
      "content-length: #{length}\r\n\r\n"].join("\r\n")
   end
 
-  def respond_with_date(client)
-    body = "<html><head></head><body>#{current_time_for_view}</body></html>"
-    client.puts response_headers(body.length)
-    client.puts body
+  def respond_with_date(client, debugging_info)
+    view = View.new(current_time_for_view, debugging_info)
+    client.puts response_headers(view.body_length)
+    client.puts view.response_html
   end
 
-  def respond_with_root_info(client)
-    response = View.new(debugging_output(header_values))
-    client.puts response_headers(response.body_length)
-    client.puts response
+  def respond_with_root_info(client, debugging_info)
+    view = View.new(debugging_output(header_values), debugging_info)
+    client.puts response_headers(view.body_length)
+    client.puts view.response_html
   end
 
-  def respond_with_hello(client)
+  def respond_with_hello(client, debugging_info)
     @hello_counter += 1
-    body = "<html><head></head><body><h1>Hello World, " \
-           "Count: #{@hello_counter}</h1></body></html>"
+    body = "Hello World! - Count: #{@hello_counter}"
+    view = View.new(body, debugging_info)
     client.puts response_headers(body)
     client.puts body
   end
