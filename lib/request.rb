@@ -13,7 +13,7 @@ class Request
     p request_lines.map { |l| l.split(" ") }
   end
 
-  def debugging_info
+  def debug_info
     {
       verb: request_verb,
       path: request_path,
