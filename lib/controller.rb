@@ -2,7 +2,9 @@ require 'socket'
 require_relative 'request'
 require_relative 'view'
 
-class Server
+class Controller
+  attr_reader :server
+
   def initialize
     @server = TCPServer.new(3000)
     @listening = true
